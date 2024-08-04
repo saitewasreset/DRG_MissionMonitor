@@ -6,7 +6,7 @@ CREATE TABLE mission (
     hazard_id TINYINT UNSIGNED NOT NULL,
     result TINYINT UNSIGNED NOT NULL,
     reward_credit DOUBLE NOT NULL,
-    total_supply_count INT UNSIGNED NOT NULLs
+    total_supply_count INT UNSIGNED NOT NULL
 );
 
 CREATE TABLE mission_type (
@@ -62,14 +62,11 @@ CREATE TABLE entity (
     entity_game_id VARCHAR(128)
 );
 
-INSERT INTO entity (entity_id, entity_game_id) VALUES (1, 'Unknown');
-
 CREATE TABLE weapon (
     weapon_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     weapon_game_id VARCHAR(64)
 );
 
-INSERT INTO weapon (weapon_id, weapon_game_id) VALUES (1, 'Unknown');
 
 CREATE TABLE kill_info (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -83,7 +80,7 @@ CREATE TABLE resource_info (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     mission_id INT UNSIGNED NOT NULL,
     time INT UNSIGNED NOT NULL,
-    player_id, SMALLINT UNSIGNED NOT NULL,
+    player_id SMALLINT UNSIGNED NOT NULL,
     resource_id SMALLINT UNSIGNED NOT NULL,
     amount DOUBLE NOT NULL
 );
