@@ -52,7 +52,7 @@ CREATE TABLE damage (
     damage DOUBLE,
     causer_id INT UNSIGNED NOT NULL,
     taker_id INT UNSIGNED NOT NULL,
-    weapon_id TINYINT UNSIGNED NOT NULL,
+    weapon_id SMALLINT UNSIGNED NOT NULL,
     causer_type TINYINT UNSIGNED NOT NULL,
     taker_type TINYINT UNSIGNED NOT NULL
 );
@@ -63,7 +63,7 @@ CREATE TABLE entity (
 );
 
 CREATE TABLE weapon (
-    weapon_id TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    weapon_id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     weapon_game_id VARCHAR(64)
 );
 
