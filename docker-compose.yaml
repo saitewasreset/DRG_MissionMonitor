@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   backend:
-    image: ghcr.io/saitewasreset/drg_mission_monitor_backend:0.3.2
+    image: ghcr.io/saitewasreset/drg_mission_monitor_backend:0.4.0
     environment:
       DB_HOST: db
       DB_DATABASE: xxx
@@ -24,7 +24,7 @@ services:
       - backend_data:/app/instance
 
   frontend:
-    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.3.0
+    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.4.0
 
   nginx:
     image: nginx
