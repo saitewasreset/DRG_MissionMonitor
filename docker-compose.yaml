@@ -24,7 +24,7 @@ services:
       - backend_data:/app/instance
 
   frontend:
-    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.5.0
+    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.5.1
 
   nginx:
     image: nginx
