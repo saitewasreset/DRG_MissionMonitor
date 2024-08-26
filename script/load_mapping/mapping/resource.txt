@@ -1,0 +1,9 @@
+RES_VEIN_Nitra|硝石
+RES_VEIN_Gold|黄金
+RES_COLLECT_Apoca_Bloom|彼岸花
+RES_CARVED_Bismor|蜂母石
+RES_VEIN_Morkite|墨菱石
+RES_VEIN_Croppa|铜矿
+RES_CARVED_Umanite|乌玛石
+RES_CARVED_OilShale|油页岩
+RES_COLLECT_Boolo|布洛蘑菇

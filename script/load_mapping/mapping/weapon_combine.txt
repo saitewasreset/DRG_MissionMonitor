@@ -1,0 +1,2 @@
+BP_LockOnRifle_AoE|WPN_LockOnRifle
+PRJ_SentryOvercharge_Projectile|BP_SentryGun_Redeployable

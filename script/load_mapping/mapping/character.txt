@@ -1,0 +1,4 @@
+DRILLER|钻机
+GUNNER|枪手
+ENGINEER|工程
+SCOUT|侦察
