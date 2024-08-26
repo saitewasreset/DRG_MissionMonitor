@@ -15,7 +15,7 @@ print()
 print("Loading config.json...")
 
 try:
-    with open("config.json", "r") as f:
+    with open("config.json", "r", encoding="utf-8") as f:
         try:
             config = json.load(f)
             admin_endpoint = config["admin_endpoint"]
@@ -40,7 +40,7 @@ def load_mapping(mapping_name: str):
     mapping = {}
     print("Loading {}/{}.txt...".format(mapping_path, mapping_name))
     try:
-        with open("{}/{}.txt".format(mapping_path, mapping_name), "r") as f:
+        with open("{}/{}.txt".format(mapping_path, mapping_name), "r", encoding="utf-8") as f:
             for line in f.readlines():
                 line = line.strip()
 
@@ -75,7 +75,7 @@ for mapping_name in mapping_list:
     load_mapping(mapping_name)
 
 try:
-    with open("{}/entity_blacklist.txt".format(mapping_path), "r") as f:
+    with open("{}/entity_blacklist.txt".format(mapping_path), "r", encoding="utf-8") as f:
         entity_blacklist = [x.strip() for x in f.read().splitlines()]
         r = requests.post("{}/mapping/entity_blacklist".format(admin_endpoint), json=entity_blacklist)
         try:
@@ -84,14 +84,14 @@ try:
         except json.JSONDecodeError as e:
             print("Invalid response from server: ", e)
             input("Press enter to exit...")
-            sys.sys.exit(1)
+            sys.exit(1)
 except OSError as e:
     print("Cannot open entity_blacklist.txt: ", e)
     input("Press enter to exit...")
     sys.exit(1)
 
 print("Updating cache...")
-r = requests.get("https://rocknstone.top/wearerich/mission_monitor/api/secret20231301_admin/update_essential")
+r = requests.get("{}/update_essential".format(admin_endpoint))
 try:
     res = r.json()
     if res["code"] != 200:
