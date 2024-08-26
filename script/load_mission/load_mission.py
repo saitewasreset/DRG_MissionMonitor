@@ -1,3 +1,4 @@
+import sys
 import requests
 import os
 import re
@@ -24,15 +25,15 @@ try:
         except KeyError as e:
             print("Invalid config.json: cannot get required key: ", e)
             input("Press enter to exit...")
-            exit(1)
+            sys.exit(1)
         except json.JSONDecodeError as e:
             print("Invalid config.json: ", e)
             input("Press enter to exit...")
-            exit(1)
+            sys.exit(1)
 except OSError as e:
     print("Cannot open config.json: ", e)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 already_uploaded_endpoint = "{}/mission_list".format(admin_endpoint)
 upload_endpoint = "{}/load_mission".format(admin_endpoint)
@@ -91,13 +92,13 @@ try:
     if res["code"] != 200:
         print("Server returned an error:  ", res)
         input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     else:
         print("Success!")
 except json.JSONDecodeError:
     print("Invalid response from server: ", r.text)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 print("Updating cache...")
 r = requests.get(update_endpoint)
@@ -106,13 +107,13 @@ try:
     if res["code"] != 200:
         print("Server returned an error:  ", res)
         input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     else:
         print("Success!")
 except json.JSONDecodeError:
     print("Invalid response from server: ", r.text)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 print("Rock and stone!")
 input("Press enter to exit...")

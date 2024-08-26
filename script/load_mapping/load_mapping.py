@@ -1,5 +1,6 @@
 import requests
 import json
+import sys
 
 source_addr = "https://github.com/saitewasreset/DRG_MissionMonitor"
 
@@ -22,15 +23,15 @@ try:
         except KeyError as e:
             print("Invalid config.json: cannot get required key: ", e)
             input("Press enter to exit...")
-            exit(1)
+            sys.exit(1)
         except json.JSONDecodeError as e:
             print("Invalid config.json: ", e)
             input("Press enter to exit...")
-            exit(1)
+            sys.exit(1)
 except OSError as e:
     print("Cannot open config.json: ", e)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 print("admin endpoint: {}".format(admin_endpoint))
 print("mapping path: {}".format(mapping_path))
@@ -56,7 +57,7 @@ def load_mapping(mapping_name: str):
     except OSError as e:
         print("Cannot open {}.txt: ".format(mapping_name), e)
         input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     print("Uploading {}...".format(mapping_name))
     r = requests.post("{}/mapping/{}".format(admin_endpoint, mapping_name), json=mapping)
     try:
@@ -65,7 +66,7 @@ def load_mapping(mapping_name: str):
     except json.JSONDecodeError as e:
         print("Invalid response from server: ", e)
         input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     print("Success")
 
 
@@ -83,11 +84,11 @@ try:
         except json.JSONDecodeError as e:
             print("Invalid response from server: ", e)
             input("Press enter to exit...")
-            exit(1)
+            sys.sys.exit(1)
 except OSError as e:
     print("Cannot open entity_blacklist.txt: ", e)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 print("Updating cache...")
 r = requests.get("https://rocknstone.top/wearerich/mission_monitor/api/secret20231301_admin/update_essential")
@@ -96,13 +97,13 @@ try:
     if res["code"] != 200:
         print("Server returned an error:  ", res)
         input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     else:
         print("Success")
 except json.JSONDecodeError as e:
     print("Invalid response from server: ", e)
     input("Press enter to exit...")
-    exit(1)
+    sys.exit(1)
 
 print("Rock and stone!")
 input("Press enter to exit...")
