@@ -36,6 +36,11 @@ except OSError as e:
 print("admin endpoint: {}".format(admin_endpoint))
 print("mapping path: {}".format(mapping_path))
 
+update_endpoint = "{}/update_essential".format(admin_endpoint)
+update_damage_endpoint = "{}/update_damage".format(admin_endpoint)
+print("update endpoint: {}".format(update_endpoint))
+print("update damage endpoint: {}".format(update_damage_endpoint))
+
 def load_mapping(mapping_name: str):
     mapping = {}
     print("Loading {}/{}.txt...".format(mapping_path, mapping_name))
@@ -90,8 +95,8 @@ except OSError as e:
     input("Press enter to exit...")
     sys.exit(1)
 
-print("Updating cache...")
-r = requests.get("{}/update_essential".format(admin_endpoint))
+print("Updating essential cache...")
+r = requests.get(update_endpoint)
 try:
     res = r.json()
     if res["code"] != 200:
@@ -102,6 +107,21 @@ try:
         print("Success")
 except json.JSONDecodeError as e:
     print("Invalid response from server: ", e)
+    input("Press enter to exit...")
+    sys.exit(1)
+
+print("Updating damage cache...")
+r = requests.get(update_damage_endpoint)
+try:
+    res = r.json()
+    if res["code"] != 200:
+        print("Server returned an error:  ", res)
+        input("Press enter to exit...")
+        sys.exit(1)
+    else:
+        print("Success!")
+except json.JSONDecodeError:
+    print("Invalid response from server: ", r.text)
     input("Press enter to exit...")
     sys.exit(1)
 

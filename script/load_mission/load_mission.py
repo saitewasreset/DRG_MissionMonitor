@@ -38,11 +38,13 @@ except OSError as e:
 already_uploaded_endpoint = "{}/mission_list".format(admin_endpoint)
 upload_endpoint = "{}/load_mission".format(admin_endpoint)
 update_endpoint = "{}/update_essential".format(admin_endpoint)
+update_damage_endpoint = "{}/update_damage".format(admin_endpoint)
 
 print("log path: {}".format(log_path))
 print("already uploaded endpoint: {}".format(already_uploaded_endpoint))
 print("upload endpoint: {}".format(upload_endpoint))
 print("update endpoint: {}".format(update_endpoint))
+print("update damage endpoint: {}".format(update_damage_endpoint))
 
 to_load_list = []
 
@@ -100,8 +102,23 @@ except json.JSONDecodeError:
     input("Press enter to exit...")
     sys.exit(1)
 
-print("Updating cache...")
+print("Updating essential cache...")
 r = requests.get(update_endpoint)
+try:
+    res = r.json()
+    if res["code"] != 200:
+        print("Server returned an error:  ", res)
+        input("Press enter to exit...")
+        sys.exit(1)
+    else:
+        print("Success!")
+except json.JSONDecodeError:
+    print("Invalid response from server: ", r.text)
+    input("Press enter to exit...")
+    sys.exit(1)
+
+print("Updating damage cache...")
+r = requests.get(update_damage_endpoint)
 try:
     res = r.json()
     if res["code"] != 200:
