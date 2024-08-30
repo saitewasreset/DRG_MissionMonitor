@@ -29,3 +29,5 @@ PRJ_GrenadeAxe|DRILLER
 BP_SentryGun_Redeployable|ENGINEER
 PRJ_Grenade_StickySmall|GUNNER
 BP_FriendlyShredder|ENGINEER
+BP_SMG_ElectrifiedPlatforms|ENGINEER
+Grenade_BouncyPlasma|ENGINEER

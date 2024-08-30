@@ -29,3 +29,5 @@ PRJ_GrenadeAxe|冲击战斧
 BP_SentryGun_Redeployable|轻机枪哨戒炮
 PRJ_Grenade_StickySmall|粘性手雷
 WPN_Pickaxe|十字镐
+BP_FriendlyShredder|蜂群手雷
+Grenade_BouncyPlasma|电浆连爆雷
