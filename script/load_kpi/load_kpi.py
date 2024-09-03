@@ -44,7 +44,7 @@ result = {
 }
 
 try:
-    with open("kpi_data.txt", "r") as f:
+    with open("kpi_data.txt", "r", encoding="utf-8") as f:
         for line in [x.strip() for x in f.readlines()]:
             if len(line) == 0:
                 continue
@@ -71,7 +71,7 @@ except Exception as e:
     sys.exit(1)
 
 try:
-    with open("entity_list_combined.csv", "r") as f:
+    with open("entity_list_combined.csv", "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         reader_iter = reader.__iter__()
         # skip table header
