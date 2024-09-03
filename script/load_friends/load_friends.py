@@ -15,7 +15,7 @@ print()
 print("Loading config.json...")
 
 try:
-    with open("config.json", "r", encoding="utf-8") as f:
+    with open("../config.json", "r", encoding="utf-8") as f:
         try:
             config = json.load(f)
             admin_endpoint = config["admin_endpoint"]
