@@ -1,0 +1,5 @@
+{
+  "admin_endpoint": "",
+  "log_path": "./log",
+  "mapping_path": "./mapping"
+}
