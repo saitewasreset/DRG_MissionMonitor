@@ -39,6 +39,22 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
 `$ sudo docker compose up`
 
+#### 前置 Web 服务器配置
+
+由于`load_mission`上传任务时的请求 Body 较大，若在本项目提供的 Nginx 服务器前仍有前置 Web 服务器，需配置最大允许的请求体长度。
+
+例如，对于 Nginx：
+
+```
+http {
+    ...
+
+    client_max_body_size 512M;
+
+    ...
+}
+```
+
 ### 客户端
 
 客户端需加载 Mod 以获得数据，并将数据初始化。该过程仅需操作一次。随后每次游戏结束后需使用脚本（`./script`）上传日志文件。
@@ -47,7 +63,15 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
 需使用[mint](https://github.com/trumank/mint)加载子项目中的[Mission Monitor Mod](https://github.com/saitewasreset/DRG_MissionMonitor-mod)，将`.pak`文件拖拽至`mint`界面后，点击`Install mods`即可完成安装。
 
-* 注意：加载完成后，若移动了mint或mod的文件目录，则需要重新加载。
+#### 全局脚本参数配置
+
+全局脚本参数配置选项在`./script/config.json`文件中。
+
+**注意：若对`mapping_path`、`log_path`使用了相对路径，则其分别为相对`./script/load_mapping/`和`./script/load_mission/`的路径。**
+
+- admin_endpoint：`url/ADMIN_PREFIX`
+- mapping_path：存储 mapping 文件的目录（已附带提供，要获得更新，见[主项目地址](https://github.com/saitewasreset/DRG_MissionMonitor)）
+- log_path：存储游戏日志文件的目录
 
 #### 运行脚本
 
@@ -65,12 +89,6 @@ $ pip3 install requests
 
 加载游戏中的角色列表。
 
-脚本参数配置：
-
-在`./script/load_hero/config.json`中完成如下配置：
-
-- admin_endpoint：`url/ADMIN_PREFIX`
-
 使用`./script/load_hero/load_hero.py`脚本即可完成加载。
 
 ##### `load_friends`
@@ -78,10 +96,6 @@ $ pip3 install requests
 加载要重点分析（在伤害统计、KPI 统计中进行展示）的玩家 ID。
 
 脚本参数配置：
-
-在`./script/load_friends/config.json`中完成如下配置：
-
-- admin_endpoint：`url/ADMIN_PREFIX`
 
 在`./script/load_friends/friends.txt`中完成如下配置（该文件需使用 UTF-8 编码，已附带示例）：
 
@@ -93,36 +107,16 @@ $ pip3 install requests
 
 为了将游戏内部的武器、敌人、任务 ID 等与中文名称相匹配，需要加载 mapping。
 
-脚本参数配置：
-
-在`./script/load_mapping/config.json`中完成如下配置：
-
-- admin_endpoint：`url/ADMIN_PREFIX`
-- mapping_path：存储 mapping 文件的目录（以附带提供，要获得更新，见[主项目地址](https://github.com/saitewasreset/DRG_MissionMonitor)）
-
 使用`./script/load_mapping/load_mapping.py`脚本即可完成加载。
 
 ##### `load_kpi`
 
 为了计算玩家 KPI，需要加载 KPI 数据。
 
-脚本参数配置：
-
-在`./script/load_kpi/config.json`中完成如下配置：
-
-- admin_endpoint：`url/ADMIN_PREFIX`
-
 使用`./script/load_kpi/load_kpi.py`脚本即可完成加载。
 
 ##### `load_mission`
 
 用于将游戏信息加载到后端，游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）。
-
-脚本参数配置：
-
-在`./script/load_mission/config.json`中完成如下配置：
-
-- admin_endpoint：`url/ADMIN_PREFIX`
-- log_path：存储游戏日志文件的目录（`./script/load_mission/log`目录中已有测试数据）
 
 使用`./script/load_mission/load_mission.py`脚本即可完成加载。
