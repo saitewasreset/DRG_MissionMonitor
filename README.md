@@ -10,11 +10,13 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
 ## 部署
 
-### 环境变量配置
+### 服务器端
+
+#### 配置环境变量
 
 在`docker-compose.yaml`中，需根据实际情况配置相应环境变量。
 
-#### `db`：
+`db`：
 
 | 名称                | 含义 |
 | ------------------- | ---- |
@@ -23,7 +25,7 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 | MYSQL_PASSWORD      | -    |
 | MYSQL_ROOT_PASSWORD | -    |
 
-#### `backend`：
+`backend`：
 
 | 名称         | 含义               |
 | ------------ | ------------------ |
@@ -33,13 +35,21 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 | DB_PASSWORD  | 数据库密码         |
 | ADMIN_PREFIX | 管理功能 URL 前缀  |
 
-### 一键部署
+#### 部署
 
 `$ sudo docker compose up`
 
-### 数据初始化与日志文件加载（`./script`）
+### 客户端
 
-#### 脚本运行环境
+客户端需加载 Mod 以获得数据，并将数据初始化。该过程仅需操作一次。随后每次游戏结束后需使用脚本（`./script`）上传日志文件。
+
+#### 加载 Mod
+
+需使用[mint](https://github.com/trumank/mint)加载子项目中的[Mission Monitor Mod](https://github.com/saitewasreset/DRG_MissionMonitor-mod)，将`.pak`文件拖拽至`mint`界面后，点击`Install mods`即可完成安装。
+
+* 注意：加载完成后，若移动了mint或mod的文件目录，则需要重新加载。
+
+#### 运行脚本
 
 数据初始化与日志文件加载脚本使用 Python 3 编写，同时依赖 requests 库。
 
@@ -51,7 +61,7 @@ $ pip3 install requests
 
 假设部署后后端 API 的根目录为`url = http://127.0.0.1:8080/api`
 
-### `load_hero`
+##### `load_hero`
 
 加载游戏中的角色列表。
 
@@ -63,7 +73,7 @@ $ pip3 install requests
 
 使用`./script/load_hero/load_hero.py`脚本即可完成加载。
 
-### `load_friends`
+##### `load_friends`
 
 加载要重点分析（在伤害统计、KPI 统计中进行展示）的玩家 ID。
 
@@ -79,7 +89,7 @@ $ pip3 install requests
 
 使用`./script/load_friends/load_friends.py`脚本即可完成加载。
 
-### `load_mapping`
+##### `load_mapping`
 
 为了将游戏内部的武器、敌人、任务 ID 等与中文名称相匹配，需要加载 mapping。
 
@@ -92,7 +102,7 @@ $ pip3 install requests
 
 使用`./script/load_mapping/load_mapping.py`脚本即可完成加载。
 
-### `load_kpi`
+##### `load_kpi`
 
 为了计算玩家 KPI，需要加载 KPI 数据。
 
@@ -104,7 +114,7 @@ $ pip3 install requests
 
 使用`./script/load_kpi/load_kpi.py`脚本即可完成加载。
 
-### `load_mission`
+##### `load_mission`
 
 用于将游戏信息加载到后端，游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）。
 
