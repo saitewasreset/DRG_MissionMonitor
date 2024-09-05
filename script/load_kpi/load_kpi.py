@@ -3,6 +3,38 @@ import csv
 import sys
 import json
 
+def print_endpoint(endpoint: str, name: str):
+    print("update {} endpoint: {}".format(name, endpoint))
+
+def update_cache(endpoint: str, name: str):
+    print("Updating {} cache...".format(name))
+    r = requests.get(endpoint)
+    try:
+        res = r.json()
+        if res["code"] != 200:
+            print("Server returned an error:  ", res)
+            input("Press enter to exit...")
+            sys.exit(1)
+        else:
+            print("Success! time: {}ms".format(res["data"]["time_ms"]))
+    except json.JSONDecodeError:
+        print("Invalid response from server: ", r.text)
+        input("Press enter to exit...")
+        sys.exit(1)
+
+def update_all_cache(admin_endpoint: str):
+    update_mission_kpi_endpoint = "{}/update_mission_kpi".format(admin_endpoint)
+    update_endpoint = "{}/update_essential".format(admin_endpoint)
+    update_damage_endpoint = "{}/update_damage".format(admin_endpoint)
+    update_general_endpoint = "{}/update_general".format(admin_endpoint)
+
+    update_list = [(update_mission_kpi_endpoint, "mission kpi"), (update_endpoint, "essential"), (update_damage_endpoint, "damage"), (update_general_endpoint, "general")]
+
+    for endpoint, name in update_list:
+        print_endpoint(endpoint, name)
+    for endpoint, name in update_list:
+        update_cache(endpoint, name)
+
 source_addr = "https://github.com/saitewasreset/DRG_MissionMonitor"
 
 print("Mission Monitor: load_kpi")
@@ -127,10 +159,7 @@ if res["code"] == 200:
             print("Server returned an error:  ", res)
             input("Press enter to exit...")
             sys.exit(1)
-        else:
-            print("Success")
-            print("Rock and stone!")
-            input("Press enter to exit...")
+            
     except json.JSONDecodeError as e:
         print("Invalid response from server: ", e)
         input("Press enter to exit...")
@@ -139,3 +168,9 @@ else:
     print("Server returned an error:  ", res)
     input("Press enter to exit...")
     sys.exit(1)
+
+update_all_cache(admin_endpoint)
+
+print("Success")
+print("Rock and stone!")
+input("Press enter to exit...")
