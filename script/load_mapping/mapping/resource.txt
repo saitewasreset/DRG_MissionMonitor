@@ -7,3 +7,7 @@ RES_VEIN_Croppa|铜矿
 RES_CARVED_Umanite|乌玛石
 RES_CARVED_OilShale|油页岩
 RES_COLLECT_Boolo|布洛蘑菇
+RES_COLLECT_Barley1|大麦球果
+RES_COLLECT_Barley2|酵母松果
+RES_COLLECT_Barley3|麦芽星果
+RES_COLLECT_Barley4|淀粉坚果
