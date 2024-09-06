@@ -28,6 +28,12 @@ WPN_FlareGun|SCOUT
 PRJ_GrenadeAxe|DRILLER
 BP_SentryGun_Redeployable|ENGINEER
 PRJ_Grenade_StickySmall|GUNNER
+WPN_Pickaxe|
 BP_FriendlyShredder|ENGINEER
-BP_SMG_ElectrifiedPlatforms|ENGINEER
 Grenade_BouncyPlasma|ENGINEER
+Grenade_StickyMine|ENGINEER
+Grenade_Cluster_Fragment|GUNNER
+BP_Grenade_NeedleSprayer|GUNNER
+Grenade_Incendiary|GUNNER
+Grenade_Freeze|SCOUT
+BP_LureTarget|ENGINEER
