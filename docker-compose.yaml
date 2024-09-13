@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.9.0
+    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:0.11.0
     restart: unless-stopped
 
   nginx:
