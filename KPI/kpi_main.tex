@@ -4,10 +4,11 @@
 \usepackage{tabularx}
 \usepackage{longtable}
 \usepackage{hyperref}
+\usepackage{CJKfntef}
 
 \begin{document}
 
-\title{KPI V0.2.3}
+\title{KPI V0.3.0}
 \author{saitewasreset}
 
 \maketitle
@@ -65,7 +66,7 @@
 
     \hline
 
-    $m$        & 矿物采集量（含硝石）.                                                                                                        \\
+    $m^\alpha$        & 带权矿物采集量（含硝石）：$m^\alpha = \sum_{i = 1}^{n} m_i \cdot p^\alpha_i$，其中$m_i$为第$i$种矿物的采集量，$p^\alpha_i$为在权值表$\alpha$下第$i$种矿物的权重.                                                                                                    \\
 
     \hline
 
@@ -169,8 +170,6 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
     \hline
 \end{longtable}
 
-
-
 \subsection{指数定义}
 \label{sec:idxdef}
 
@@ -220,16 +219,145 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 \end{longtable}
 
 
-\section{角色原始KPI}
-\label{sec:rKPI}
+\subsection{赋分算法}
 
-\textbf{注意：由于项目难度不同，不同角色的原始KPI没有可比性.}
+由于不同角色完成相同任务的难度不同\footnote{例如，对于工程，带权输出占到该局游戏总计带权输出的50\%较为困难，而对于侦察，采集量占到该局总计采集量的50\%相对容易.}，需要对直接计算出的指数进行赋分，再参加原始KPI计算.
+
+\subsubsection{赋分原则}
+
+对于由修正因子修正后的指数$I$，计算其在所有玩家中的排名$r$，由排名确定赋分区域$A$，每个赋分区域含以下信息：排名区间、原始分区间、赋分区间.
+
+设赋分区间$A$中原始分（即$I$）的最小值为$I_{m}^s$，最大值为$I_{M}^s$，赋分的最小值为$I_{m}^t$，最大值为$I_{M}^t$，玩家原始分为$I^s$，则按如下公式计算得到赋分$I^t$：
+
+\begin{equation}
+    \frac{I^s - I_{m}^s}{I_{M}^s - I_{m}^s} = \frac{I^t - I_{m}^t}{I_{M}^t - I_{m}^t}
+\end{equation}
+
+\subsubsection{赋分实例}
+
+为了简便起见，以下计算采用不带权、不带修正因子的指数$I$.
+
+例如，对于枪手，其输出指数$D$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.33, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.26, 0.32)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.23, 0.25)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.19, 0.23)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.19)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某枪手在某局游戏中的$D_I^s = 0.26$，其排名为$37\%$，由上表可知其赋分区间为$[15\%, 40\%)$，计算可得赋分为$D_I^t = 0.72$.
+
+\subsubsection{赋分特性}
+
+对于枪手，其采集指数$m$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.22, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.15, 0.21)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.12, 0.14)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.06, 0.12)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.06)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某枪手在某局游戏中的$m_I^s = 0.19$，其排名为$23\%$，由上表可知其赋分区间为$[15\%, 40\%)$，计算可得赋分为$m_I^t = 0.82$.
+
+若某枪手在某局游戏中的$m_I^s = 0.24$，其排名为$13\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.90$.
+
+若某枪手在某局游戏中的$m_I^s = 0.47$，其排名为$1\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.93$.
+
+对于侦察，其采集指数$m$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.38, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.27, 0.37)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.20, 0.25)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.15, 0.19)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.13)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某侦察在某局游戏中的$m_I^s = 0.19$，其排名为$54\%$，由上表可知其赋分区间为$[50\%, 70\%)$，计算可得赋分为$m_I^t = 0.59$.
+
+若某侦察在某局游戏中的$m_I^s = 0.24$，其排名为$43\%$，由上表可知其赋分区间为$[40\%, 50\%)$，计算可得赋分为$m_I^t = 0.67$.
+
+若某侦察在某局游戏中的$m_I^s = 0.47$，其排名为$9\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.91$.
+
+
+
+\textbf{由上述实例不难发现，在选择的角色\CJKunderdot{本职工作}上投入更多精力，获得的赋分提升更大。}
+
+\section{角色任务KPI}
+\label{sec:rKPI}
 
 令$\beta_i \in \{k_I, D_I, P_I, r_I, d_I, f_I, n_I, m_I, s_I\}$为对应指数的权重，且$\beta_i$对应指数的值域的上界为$t_i$，
 则“最大加权和”为$\sum_{i = 1}^{n} \beta_i \cdot t_i$，
-设玩家本局中指数$\beta_i$对应的值为$a_i$，则实际加权和为$\sum_{i = 1}^{n} \beta_i \cdot a_i$.
+设玩家本局中指数$\beta_i$对应的值为$a_i^t$（若该项目赋分，则为赋分后的值），则实际加权和为$\sum_{i = 1}^{n} \beta_i \cdot a_i^t$.
 
-则定义原始KPI为：$rKPI = \frac{\sum_{i = 1}^{n} \beta_i \cdot a_i}{\sum_{i = 1}^{n} \beta_i \cdot t_i} \cdot 100$.
+则定义任务KPI为：$mKPI = \frac{\sum_{i = 1}^{n} \beta_i \cdot a_i^t}{\sum_{i = 1}^{n} \beta_i \cdot t_i} \cdot 100$.
 
 \subsection{钻机}
 
@@ -345,7 +473,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    输出指数($D_I^G$)  & $D_G$ & $0.400$          \\
+    输出指数($D_I^G$)  & $D_G$ & $0.410$          \\
 
     \hline
 
@@ -365,7 +493,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    硝石指数($n_I$)    & $n_G$ & $0.015$          \\
+    硝石指数($n_I$)    & $n_G$ & $0.010$          \\
 
     \hline
 
@@ -373,7 +501,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    采集指数($m_I$)    & $m_G$ & $0.010$          \\
+    采集指数($m_I$)    & $m_G$ & $0.005$          \\
 
     \hline
 \end{longtable}
@@ -423,7 +551,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    高威胁目标($P_I$)   & $P_E$ & $0.100$          \\
+    高威胁目标($P_I$)   & $P_E$ & $0.125$          \\
 
     \hline
 
@@ -439,7 +567,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    硝石指数($n_I$)    & $n_E$ & $0.045$          \\
+    硝石指数($n_I$)    & $n_E$ & $0.025$          \\
 
     \hline
 
@@ -447,7 +575,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    采集指数($m_I$)    & $m_E$ & $0.025$          \\
+    采集指数($m_I$)    & $m_E$ & $0.020$          \\
 
     \hline
 \end{longtable}
@@ -490,7 +618,7 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    击杀数指数($k_I^S$) & $k_S$ & $0.030$          \\
+    击杀数指数($k_I^S$) & $k_S$ & $0.010$          \\
 
     \hline
 
@@ -498,15 +626,15 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
     \hline
 
-    高威胁目标($P_I$)   & $P_S$ & $0.100$          \\
+    高威胁目标($P_I$)   & $P_S$ & $0.150$          \\
 
     \hline
 
-    救人指数($r_I$)    & $r_S$ & $0.102$          \\
+    救人指数($r_I$)    & $r_S$ & $0.087$          \\
 
     \hline
 
-    倒地指数($d_I$)    & $d_S$ & $0.115$          \\
+    倒地指数($d_I$)    & $d_S$ & $0.1$          \\
 
     \hline
 
@@ -609,73 +737,12 @@ $f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
 
 \section{玩家KPI}
 
-正如在\ref{sec:rKPI}节中提到的，不同角色的原始KPI没有可比性.
-因此，为了计算玩家的的总体KPI，需要将不同角色的$rKPI$乘以相应系数进行“归一化”，以求相同水平的玩家在不同角色下能有相近的修正KPI.
-
-为了方便起见，我们以（辅助型）侦察的$rKPI$为标准，定义其它角色到（辅助型）侦察的KPI修正因子为$\psi_i, i \in \{D, G, E, S'\}$.
-
-则定义修正KPI：$sKPI = rKPI \cdot \psi_i$.
-
-\subsection{$\psi$的计算}
-
-为了计算$\psi$，我们按玩家对应角色的晋升次数进行分层统计.
-
-对于角色$c \in \{D, G, E, S\}$，在每个晋升区间$\alpha$，计算$rKPI$平均数$m_c^\alpha$.
-
-对于角色$i \in \{D, G, E\}$，在每个晋升区间$\alpha$，计算修正因子$\psi_i^\alpha = \frac{m_i^\alpha}{m_S^\alpha}$
-
-对于$S'$到$S$的修正因子，有个微妙的问题：
-
-对于加入公开房间的非熟人玩家，无法自动化地判断其角色为$S$还是$S'$（注意：由于$S$与$S'$的难度也不同，因此不能通过分别计算$rKPI$并取较大者进行判断）.
-
-由此，我们决定只利用能确定角色属性的熟人玩家进行$S'$到$S$的修正因子的计算。
-
-\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{4em}|}
-    \hline
-
-    晋升区间      & $\psi$ \endhead
-
-    \hline
-
-    None      & $\psi_c^0$      \\
-
-    \hline
-
-    Bronze    & $\psi_c^1$      \\
-
-    \hline
-
-    Silver    & $\psi_c^2$      \\
-
-    \hline
-
-    Gold      & $\psi_c^3$      \\
-
-    \hline
-
-    Platinum  & $\psi_c^4$      \\
-
-    \hline
-
-    Diamond   & $\psi_c^5$      \\
-
-    \hline
-
-    Legendary & $\psi_c^6$      \\
-
-    \hline
-\end{longtable}
-
-$\forall \alpha,$定义$\psi_S^\alpha = 1.000$.
-
-\subsection{玩家KPI的计算}
-
-设玩家在任务$i$中所选的角色为$c_i$，在该任务中的玩家指数为$p_i$，$c_i$在该任务中属于晋升区间$\alpha_i$，其$rKPI$为$a$.
+设玩家在任务$i$中所选的角色为$c_i$，在该任务中的玩家指数为$p_i$，其$mKPI$为$a$.
 
 则玩家总体KPI为：
 
 \begin{equation}
-    KPI = \frac{\sum_{i = 1}^{n} p_i \cdot \psi_{c_i}^{\alpha_i} \cdot a}{\sum_{i = 1}^{n} p_i}
+    KPI = \frac{\sum_{i = 1}^{n} p_i \cdot a}{\sum_{i = 1}^{n} p_i}
 \end{equation}
 
 \appendix
@@ -807,6 +874,7 @@ $\forall \alpha,$定义$\psi_S^\alpha = 1.000$.
 高威胁目标权值表的默认值为0，角色权值表为1.
 
 \input{weight_table.tex}
+\input{resource_weight_table.tex}
 
 \begin{thebibliography}{99}
     \bibitem{bilibili-scout} 猫猫爱吃875小饼干.【深岩银河】从零开始的顶侦培养计划---第一章基础介绍(入门篇). https://www.bilibili.com/video/BV1ig4y197GB.
