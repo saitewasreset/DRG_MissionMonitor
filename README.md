@@ -12,8 +12,6 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
 ### 服务器端
 
-#### 配置环境变量
-
 在`docker-compose.yaml`中，需根据实际情况配置相应环境变量。
 
 `db`：
@@ -35,9 +33,11 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 | DB_PASSWORD  | 数据库密码         |
 | ADMIN_PREFIX | 管理功能 URL 前缀  |
 
-#### 部署
+随后执行
 
-`$ sudo docker compose up`
+```shell
+sudo docker compose up
+```
 
 #### 前置 Web 服务器配置
 
@@ -45,7 +45,7 @@ Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
 例如，对于 Nginx：
 
-```
+```config
 http {
     ...
 
@@ -78,7 +78,7 @@ http {
 数据初始化与日志文件加载脚本使用 Python 3 编写，同时依赖 requests 库。
 
 ```shell
-$ pip3 install requests
+pip3 install requests
 ```
 
 此外，对于 Windows 系统，也可从[项目 Release](https://github.com/saitewasreset/DRG_MissionMonitor/releases)中下载打包好的版本。
@@ -120,3 +120,12 @@ $ pip3 install requests
 用于将游戏信息加载到后端，游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）。
 
 使用`./script/load_mission/load_mission.py`脚本即可完成加载。
+
+## 更新
+
+每次更新服务器端的容器时，仅需执行下列命令：
+
+```shell
+sudo docker compose pull
+sudo docker compose up --force-recreate
+```
