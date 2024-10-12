@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis
+    image: redis:alpine
     volumes:
       - redis_data:/data
     restart: unless-stopped
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx
+    image: nginx:stable-alpine-slim
     ports:
       - 8080:80
     volumes:
