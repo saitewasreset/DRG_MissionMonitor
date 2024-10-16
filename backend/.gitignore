@@ -1,0 +1,10 @@
+/target
+.env
+/raw_log
+.vscode
+/config.json
+/watchlist.txt
+/mapping
+/instance
+/kpi
+/diesel.toml
