@@ -15,7 +15,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $(cat /run/secrets/db_user) -d $$POSTGRES_DB"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $(cat /run/secrets/db_user) -d $$POSTGRES_DB",
+        ]
       start_period: 1m
       start_interval: 5s
       interval: 10m
@@ -36,7 +40,7 @@ services:
       retries: 3
 
   backend:
-    image: ghcr.io/saitewasreset/mission_backend_rs:latest
+    image: ghcr.io/saitewasreset/mission_monitor:latest
     secrets:
       - db_conn_url
       - redis_conn_url
@@ -54,6 +58,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    ports:
+      - 8080:80
     healthcheck:
       test: ["CMD-SHELL", "curl http://localhost:8080/api/heartbeat"]
       start_period: 1m
@@ -61,33 +67,6 @@ services:
       interval: 10m
       timeout: 30s
       retries: 3
-
-  frontend:
-    image: ghcr.io/saitewasreset/drg_mission_monitor_webui:latest
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "nginx -t"]
-      start_period: 1m
-      start_interval: 5s
-      interval: 10m
-      timeout: 30s
-      retries: 3
-
-  nginx:
-    image: nginx:stable-alpine-slim
-    restart: unless-stopped
-    ports:
-      - 8080:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      backend:
-        condition: service_healthy
-      frontend:
-        condition: service_healthy
 
 secrets:
   db_user:
