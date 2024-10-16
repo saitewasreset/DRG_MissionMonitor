@@ -129,7 +129,7 @@ async fn main() -> std::io::Result<()> {
                     .service(web::scope("/kpi").configure(kpi::scoped_config))
                     .service(web::scope("/info").configure(info::scoped_config)),
             )
-            .service(actix_files::Files::new("/static", ".").index_file("index.html"))
+            .service(actix_files::Files::new("/", "/static").index_file("index.html"))
     })
     .bind(("0.0.0.0", 8080))?
     .run()
