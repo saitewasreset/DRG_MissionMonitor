@@ -1,0 +1,8 @@
+CREATE TABLE supply_info (
+    id SERIAL PRIMARY KEY,
+    mission_id INTEGER NOT NULL REFERENCES mission,
+    player_id SMALLINT NOT NULL REFERENCES player,
+    time SMALLINT NOT NULL,
+    ammo DOUBLE PRECISION NOT NULL,
+    health DOUBLE PRECISION NOT NULL
+);

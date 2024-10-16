@@ -1,0 +1,39 @@
+WPN_FlameThrower|CRSPR 火焰喷射器
+WPN_Cryospray|急冻喷射炮
+WPN_GooCannon|蚀泥喷射泵
+WPN_Pistol_A|苏巴特 120 半自动手枪
+WPN_ChargeBlaster|实验性等离子蓄能手枪
+WPN_MicrowaveGun|柯莱特 微波烹调者
+WPN_DoubleDrills|强化动力钻机
+BP_DetPack_Charge|C4
+WPN_CombatShotgun|“疣猪” 210 自动霰弹枪
+WPN_SMG_OneHand|“百万”伏特微型冲锋枪
+WPN_LockOnRifle|LOK-1 智能步枪
+WPN_GrenadeLauncher|深核 40 毫米便携式榴弹发射器
+WPN_LineCutter|等离子切割器
+WPN_HeavyParticleCannon|心石聚能炮
+WPN_Gatling|“铅暴”转管机枪
+WPN_Autocannon|“雷暴云砧”重型双管机炮
+WPN_MicroMissileLauncher|“飓风”制导火箭系统
+WPN_Revolver|“斗牛犬” 重型左轮手枪
+WPN_BurstPistol|BRT7 连发手枪
+WPN_CoilGun|“武装核心” 电磁手炮
+WPN_AssaultRifle|深核 GK2 突击步枪
+WPN_M1000|M1000 经典型步枪
+WPN_PlasmaCarbine|DRAK-25 电浆卡宾枪
+WPN_SawedOffShotgun|应急霰弹枪
+WPN_DualMPs|朱可夫 NUK17 双持冲锋枪
+WPN_Crossbow|尼桑卡 X-80 “闪电鲨” 战术弩
+WPN_FlareGun|照明枪
+PRJ_GrenadeAxe|冲击战斧
+BP_SentryGun_Redeployable|哨戒炮
+PRJ_Grenade_StickySmall|粘性手雷
+WPN_Pickaxe|十字镐
+BP_FriendlyShredder|蜂群手雷
+Grenade_BouncyPlasma|电浆连爆雷
+Grenade_StickyMine|感应地雷
+Grenade_Cluster_Fragment|集束手雷
+BP_Grenade_NeedleSprayer|战术铅暴雷
+Grenade_Incendiary|燃烧手雷
+Grenade_Freeze|急冻手雷
+BP_LureTarget|L.U.R.E. 诱饵雷

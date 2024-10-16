@@ -1,0 +1,1 @@
+ALTER TABLE mission_invalid DROP CONSTRAINT mission_invalid_unique;
