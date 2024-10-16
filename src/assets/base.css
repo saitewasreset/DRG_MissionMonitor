@@ -1,0 +1,65 @@
+.admin {
+  color: deepskyblue;
+}
+
+.scout {
+  color: deepskyblue;
+}
+
+.driller {
+  color: goldenrod;
+}
+
+.engineer {
+  color: red;
+}
+
+.gunner {
+  color: green;
+}
+
+.bronze {
+  color: rgb(176, 98, 75);
+}
+
+.silver {
+  color: rgb(132, 133, 143);
+}
+
+.gold {
+  color: rgb(214, 114, 2);
+}
+
+.platinum {
+  color: rgb(125, 101, 61);
+}
+
+.diamond {
+  color: rgb(100, 225, 226);
+}
+
+.legendary {
+  color: rgb(186, 24, 1);
+}
+
+.top-header {
+  background-color: #ffffff;
+  padding: 0.625em 0;
+  box-shadow: 0 0.125em 0.25em 0 rgba(0, 0, 0, 0.1);
+}
+
+.selected-row {
+  background-color: #9ed4fc;
+}
+
+.text-danger {
+  color: red;
+}
+
+.text-warning {
+  color: orangered;
+}
+
+.text-ok {
+  color: green;
+}
