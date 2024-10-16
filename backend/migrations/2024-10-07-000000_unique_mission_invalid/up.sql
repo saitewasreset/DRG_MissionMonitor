@@ -1,1 +1,0 @@
-ALTER TABLE mission_invalid ADD CONSTRAINT mission_invalid_unique UNIQUE (mission_id);

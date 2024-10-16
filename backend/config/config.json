@@ -1,7 +1,0 @@
-{
-  "access_token": "Rock and stone!",
-  "endpoint_url": "http://127.0.0.1:8080/api",
-  "mapping_path": "./mapping",
-  "watchlist_path": "./watchlist.txt",
-  "kpi_config_path": "./kpi"
-}

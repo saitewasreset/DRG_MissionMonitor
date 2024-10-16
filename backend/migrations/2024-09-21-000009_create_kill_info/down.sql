@@ -1,1 +1,0 @@
-DROP TABLE kill_info;
