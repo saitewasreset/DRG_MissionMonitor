@@ -1,0 +1,886 @@
+\documentclass{ctexart}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{CJKfntef}
+
+\begin{document}
+
+\title{KPI V0.3.0}
+\author{saitewasreset}
+
+\maketitle
+
+\tableofcontents
+
+\section{主约束条件}
+
+\begin{description}
+    \item[$A_1$] 故意友伤是不可接受的.
+          \begin{description}
+              \item[$A_{11}$] 友伤使队友死亡再救起是严重“亏损”的.
+          \end{description}
+    \item[$A_2$] 因“奋战”而倒地是可以接受的.
+    \item[$A_3$] 因“奋战”而吃补给是可以接受的.
+    \item[$A_4$] 不建议“极限一换一”.
+    \item[$A_5$] 因“奋战”而不小心友伤是可以接受的.
+\end{description}
+
+\section{符号表}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{30em}|}
+    \hline
+
+    符号         & 含义                                                                                                                 \\
+
+    \hline
+
+    $D$        & 输出：对敌人的实际伤害\footnotemark.\textbf{不含造成的友伤.}                                                                         \\
+
+    \hline
+
+    $H$        & 友伤：造成的实际友伤.                                                                                                        \\
+
+    \hline
+
+    $D_A$      & 全输出：$D_A = D + H$.                                                                                                 \\
+
+    \hline
+
+    $k$        & 击杀数.                                                                                                               \\
+
+    \hline
+
+    $k^\alpha$ & 带权击杀数：$k^\alpha = \sum_{i = 1}^{n} k_i \cdot p^\alpha_i$，其中$k_i$为第$i$种敌人的击杀数，$p^\alpha_i$为在权值表$\alpha$下第$i$种敌人的权重. \\
+
+    \hline
+
+    $D^\alpha$ & 带权输出：$D^\alpha = \sum_{i = 1}^{n} D_i \cdot p^\alpha_i$，其中$D_i$为第$i$种敌人的击杀数，$p^\alpha_i$为在权值表$\alpha$下第$i$种敌人的权重.  \\
+
+    \hline
+
+    $n$        & 硝石采集量.                                                                                                             \\
+
+    \hline
+
+    $m^\alpha$        & 带权矿物采集量（含硝石）：$m^\alpha = \sum_{i = 1}^{n} m_i \cdot p^\alpha_i$，其中$m_i$为第$i$种矿物的采集量，$p^\alpha_i$为在权值表$\alpha$下第$i$种矿物的权重.                                                                                                    \\
+
+    \hline
+
+    $s$        & 使用补给次数.                                                                                                            \\
+
+    \hline
+
+    $\bar{s}$  & 约化补给次数$\bar{s} =s + 1$.                                                                                            \\
+
+    \hline
+
+    $p$        & 玩家指数：$p = \frac{T_{p}}{T}$，其中$T_{p}$为该玩家处于该任务中的时间，$T$为任务总时间.                                                       \\
+
+    \hline
+\end{longtable}
+
+
+\footnotetext{由伤害前后敌人血量变化量表示，不含护甲破坏.}
+
+\section{指数定义}
+
+定义角色代号：钻机——$D$，枪手——$G$，工程——$E$，（辅助型）侦察——$S$，输出型侦察——$S'$.
+
+\subsection{人数及角色修正因子}
+
+由于一局游戏的人数不同、角色分配不同，击杀数$k$、输出$D$、硝石采集量$n$、资源采集量$m$的分布可能有较大差异，若直接利用玩家$i$的数据$k_i$、$D_i$、$n_i$、$m_i$占总数据的比例作为相应指数的值，则计算出的KPI结果可能随局内玩家人数不同、角色分配不同而存在较大差异，不利于保持KPI的稳定性及参考性.
+故需要引入修正因子$\Gamma^i, i \in \{k, D, n, m\}$对相关数据进行修正.
+
+定义修正指标$\gamma_k^i$，其中$k$表示玩家$k$所选角色$i$对应的修正指标，修正指标数据见表\ref{tab:kill_by_character}、表\ref{tab:damage_by_character}、表\ref{tab:nitra_by_character}、表\ref{tab:minerals_by_character}.
+
+对每一局游戏，对每种需要修正的数据$i, i \in \{k, D, n, m\}$，定义修正指标和$\delta^i$为：$\sum_{k = 1}^{n} \gamma_k^i$.
+
+取附录\ref{sec:statistic}中的修正指标和为“标准”指标和$\delta_0^i$.
+
+由此可定义修正因子为$\Gamma^i = \frac{\delta^i}{\delta_0^i}, i \in \{k, D, n, m\}$.
+
+例如：
+
+若游戏人数为4，且所选角色为$[D, G, E, S]$，对于击杀数$k$，由表\ref{tab:kill_by_character}，修正指标和$\delta^k = 1.682 + 1.682 + 2.848 + 1.000 = 7.212$，“标准”指标和$\delta_0^k = 7.212$，修正因子为$\Gamma^i = \frac{7.212}{7.212} = 1.000$.
+
+若游戏人数为4，且所选角色为$[E, E, E, E]$，对于击杀数$k$，由表\ref{tab:kill_by_character}，修正指标和$\delta^k = 2.848 + 2.848 + 2.848 + 2.848 = 11.392$，“标准”指标和$\delta_0^k = 7.212$，修正因子为$\Gamma^i = \frac{11.392}{7.212} = 1.580$.
+
+\subsection{友伤指数算法}
+\label{sec:f}
+
+定义$f(x) = \frac{99}{x - 1} + 100$，其中$x$为友伤比例$=\frac{H_i}{D_{A_i}}$.($A_1$)($A_5$)
+
+$f(x)$的定义域为$[0, 1]$，值域为$(-\infty, 1]$.
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{2em}|>{\centering\arraybackslash}p{4em}|}
+
+    \hline
+
+    $x \cdot 10^{-3}$ & $f(x)$    \endhead
+
+    \hline
+
+    $ 0.0 $           & $1.000$            \\
+
+    \hline
+
+    $ 1.5 $           & $0.851$            \\
+
+    \hline
+
+    $ 2.5 $           & $0.752$            \\
+
+    \hline
+
+    $ 3.5 $           & $0.652$            \\
+
+    \hline
+
+    $ 4.0 $           & $0.602$            \\
+
+    \hline
+
+    $ 6.5 $           & $0.352$            \\
+
+    \hline
+
+    $ 10 $            & $0.000$            \\
+
+    \hline
+
+    $ 15 $            & $-0.508$           \\
+
+    \hline
+
+    $ 20 $            & $-1.020$           \\
+
+    \hline
+
+    $ 100 $           & $-10.00$           \\
+
+    \hline
+
+    $ 1000 $          & $-\infty$          \\
+
+    \hline
+\end{longtable}
+
+\subsection{指数定义}
+\label{sec:idxdef}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{14em}|>{\centering\arraybackslash}p{10em}|>{\centering\arraybackslash}p{4em}|}
+
+    \hline
+
+    指数符号         & 指数释义                                                & 定义                                                                        & 值域             \endhead
+
+    \hline
+
+    $k_I^\alpha$ & 击杀数指数：击杀数占总击杀数的比例（带权值，采用权值表$\alpha$，带修正因子）.         & $min\{1, \frac{k_x^\alpha}{\sum_{i = 1}^{n} k_i^\alpha} \cdot \Gamma^k\}$ & $[0, 1]$                \\
+
+    \hline
+
+    $D_I^\alpha$ & 输出指数：输出占总输出的比例（带权值，采用权值表$\alpha$，带修正因子）.            & $min\{1, \frac{D_x^\alpha}{\sum_{i = 1}^{n} D_i^\alpha} \cdot \Gamma^D\}$ & $[0, 1]$                \\
+
+    \hline
+
+    $P_I$        & 高威胁目标：使用高威胁权值表的输出指数.                                & $\frac{D_x^\delta}{\sum_{i = 1}^{n} D_i^\delta}$                          & $[0, 1]$                \\
+
+    \hline
+
+    $r_I$        & 救人指数：救人次数占总救人次数的比例，\textbf{若总救人次数为0，则为1}.           & $\frac{r_x}{\sum_{i = 1}^{n} r_i}$                                        & $[0, 1]$                \\
+
+    \hline
+
+    $d_I$        & 倒地指数：倒地次数占总倒地次数的比例，\textbf{若总倒地次数为0，则为0}.           & -$\frac{d_x}{\sum_{i = 1}^{n} d_i}$                                       & $[-1, 0]$               \\
+
+    \hline
+
+    $f_I$        & 友伤指数：见$\ref{sec:f}$节.                               & 见$\ref{sec:f}$节.                                                          & $(-\infty, 1]$          \\
+
+    \hline
+
+    $n_I$        & 硝石指数：采集硝石量占总硝石采集量的比例（带修正因子），\textbf{若总硝石采集量为0，则为0}. & $min\{1, \frac{n_x^\alpha}{\sum_{i = 1}^{n} n_i^\alpha} \cdot \Gamma^n\}$ & $[0, 1]$                \\
+
+    \hline
+
+    $m_I$        & 采集指数：采集矿石量占总矿石采集量的比例（带修正因子），\textbf{若总矿石采集量为0，则为0}. & $min\{1, \frac{m_x^\alpha}{\sum_{i = 1}^{n} m_i^\alpha} \cdot \Gamma^m\}$ & $[0, 1]$                \\
+
+    \hline
+
+    $s_I$        & 补给指数：补给次数占总补给次数的比例，\textbf{若总补给次数为0，则为0}.           & $-\frac{s_x^\alpha}{\sum_{i = 1}^{n} s_i^\alpha}$                         & $[-1, 0]$               \\
+
+    \hline
+\end{longtable}
+
+
+\subsection{赋分算法}
+
+由于不同角色完成相同任务的难度不同\footnote{例如，对于工程，带权输出占到该局游戏总计带权输出的50\%较为困难，而对于侦察，采集量占到该局总计采集量的50\%相对容易.}，需要对直接计算出的指数进行赋分，再参加原始KPI计算.
+
+\subsubsection{赋分原则}
+
+对于由修正因子修正后的指数$I$，计算其在所有玩家中的排名$r$，由排名确定赋分区域$A$，每个赋分区域含以下信息：排名区间、原始分区间、赋分区间.
+
+设赋分区间$A$中原始分（即$I$）的最小值为$I_{m}^s$，最大值为$I_{M}^s$，赋分的最小值为$I_{m}^t$，最大值为$I_{M}^t$，玩家原始分为$I^s$，则按如下公式计算得到赋分$I^t$：
+
+\begin{equation}
+    \frac{I^s - I_{m}^s}{I_{M}^s - I_{m}^s} = \frac{I^t - I_{m}^t}{I_{M}^t - I_{m}^t}
+\end{equation}
+
+\subsubsection{赋分实例}
+
+为了简便起见，以下计算采用不带权、不带修正因子的指数$I$.
+
+例如，对于枪手，其输出指数$D$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.33, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.26, 0.32)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.23, 0.25)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.19, 0.23)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.19)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某枪手在某局游戏中的$D_I^s = 0.26$，其排名为$37\%$，由上表可知其赋分区间为$[15\%, 40\%)$，计算可得赋分为$D_I^t = 0.72$.
+
+\subsubsection{赋分特性}
+
+对于枪手，其采集指数$m$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.22, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.15, 0.21)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.12, 0.14)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.06, 0.12)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.06)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某枪手在某局游戏中的$m_I^s = 0.19$，其排名为$23\%$，由上表可知其赋分区间为$[15\%, 40\%)$，计算可得赋分为$m_I^t = 0.82$.
+
+若某枪手在某局游戏中的$m_I^s = 0.24$，其排名为$13\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.90$.
+
+若某枪手在某局游戏中的$m_I^s = 0.47$，其排名为$1\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.93$.
+
+对于侦察，其采集指数$m$的赋分区域信息如下：
+
+\begin{longtable}{|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    排名区间             & 原始分区间  & 赋分区间     \endhead
+
+    \hline
+
+    $[0\%, 15\%)$ & $[0.38, 1.00)$  & $[0.90, 1.00)$          \\
+
+    \hline
+
+    $[15\%, 40\%)$  & $[0.27, 0.37)$ & $[0.70, 0.90)$          \\
+
+    \hline
+
+    $[40\%, 50\%)$   & $[0.20, 0.25)$ & $[0.60, 0.70)$          \\
+
+    \hline
+
+    $[50\%, 70\%)$    & $[0.15, 0.19)$ & $[0.35, 0.6)$          \\
+
+    \hline
+
+    $[70\%, 100\%)$    & $[0.00, 0.13)$ & $[0.00, 0.35)$          \\
+
+    \hline
+
+\end{longtable}
+
+若某侦察在某局游戏中的$m_I^s = 0.19$，其排名为$54\%$，由上表可知其赋分区间为$[50\%, 70\%)$，计算可得赋分为$m_I^t = 0.59$.
+
+若某侦察在某局游戏中的$m_I^s = 0.24$，其排名为$43\%$，由上表可知其赋分区间为$[40\%, 50\%)$，计算可得赋分为$m_I^t = 0.67$.
+
+若某侦察在某局游戏中的$m_I^s = 0.47$，其排名为$9\%$，由上表可知其赋分区间为$[0\%, 15\%)$，计算可得赋分为$m_I^t = 0.91$.
+
+
+
+\textbf{由上述实例不难发现，在选择的角色\CJKunderdot{本职工作}上投入更多精力，获得的赋分提升更大。}
+
+\section{角色任务KPI}
+\label{sec:rKPI}
+
+令$\beta_i \in \{k_I, D_I, P_I, r_I, d_I, f_I, n_I, m_I, s_I\}$为对应指数的权重，且$\beta_i$对应指数的值域的上界为$t_i$，
+则“最大加权和”为$\sum_{i = 1}^{n} \beta_i \cdot t_i$，
+设玩家本局中指数$\beta_i$对应的值为$a_i^t$（若该项目赋分，则为赋分后的值），则实际加权和为$\sum_{i = 1}^{n} \beta_i \cdot a_i^t$.
+
+则定义任务KPI为：$mKPI = \frac{\sum_{i = 1}^{n} \beta_i \cdot a_i^t}{\sum_{i = 1}^{n} \beta_i \cdot t_i} \cdot 100$.
+
+\subsection{钻机}
+
+\begin{description}
+    \item[$D_1$] 对群\cite{tieba-all}.
+    \item[$D_2$] 弱远程.
+\end{description}
+
+约束条件：
+
+\begin{description}
+    \item[$D_1$] $k_D > D_D, k_D + D_D + P_D \ge 0.5$.
+    \item[$D_2$] $P_I = 0$.
+    \item[$A_1$] $f_D \ge 0.1$.
+    \item[$A_2$]  我们估计，平均每局总计输出大约为70K，钻机平均输出应大于10K，则不带权输出指数$D_I$应大约为$D^0 = \frac{1}{7}$，而带权输出指数$D^D_I$应大于$D_I$. 我们估计，钻机每局\textbf{正常}倒地次数为2次($d^0$)，每局所有人总计倒地次数为6次($d^1$)，则由$A_2$：
+
+          $\frac{D^0}{d^0} \cdot D_D> \frac{1}{d^1} \cdot d_D$
+          解得$D_D > \frac{d^0 \cdot d_D}{d^1 \cdot D^0} = \frac{7}{3} \cdot d_D$.
+    \item[$A_3$] 我们估计，钻机的补给指数约为$\frac{1}{4}$($s^0$)（钻机$\frac{1}{4}$，枪手$\frac{1}{4}$，工程$\frac{3}{8}$，侦察$\frac{1}{8}$）
+
+          我们估计，5K伤害对应一份补给，即一份补给对应约$\frac{D^0}{2} = \frac{1}{14}$
+
+          则由$A_3$：$\frac{D^0}{2} \cdot D_D > s^0 \cdot s_D$
+
+          解得$s_D < \frac{D^0 \cdot D_D}{2 s^0} = \frac{2}{7} D_D$.
+
+    \item[$A_4$] $d_D \ge r_D$.
+\end{description}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{8em}|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    项目             & 权重标识  & 参考值     \endhead
+
+    \hline
+
+    击杀数指数($k_I^D$) & $k_D$ & $0.400$          \\
+
+    \hline
+
+    输出指数($D_I^D$)  & $D_D$ & $0.200$          \\
+
+    \hline
+
+    高威胁目标($P_I$)   & $P_D$ & $0.000$          \\
+
+    \hline
+
+    救人指数($r_I$)    & $r_D$ & $0.080$          \\
+
+    \hline
+
+    倒地指数($d_I$)    & $d_D$ & $0.085$          \\
+
+    \hline
+
+    友伤指数($f_I$)    & $f_D$ & $0.100$          \\
+
+    \hline
+
+    硝石指数($n_I$)    & $n_D$ & $0.048$          \\
+
+    \hline
+
+    补给指数($s_I$)    & $s_D$ & $0.057$          \\
+
+    \hline
+
+    采集指数($m_I$)    & $m_D$ & $0.030$          \\
+
+    \hline
+\end{longtable}
+
+
+\subsection{枪手}
+
+\begin{description}
+    \item[$G_1$] 提供强有力的火力支援\cite{tieba-all}\cite{xiaoheihe-all} 对单+对群\cite{tieba-all}.
+\end{description}
+
+约束条件：
+
+\begin{description}
+    \item[$G_1$] $k_G + D_G + P_G \ge 0.75, D_G > P_G > k_G$.
+    \item[$A_1$] $f_G \ge 0.1$.
+    \item[$A_2$]  我们估计，平均每局总计输出大约为70K，枪手平均输出应大于20K，则不带权输出指数$D_I$应大约为$D^0 = \frac{2}{7}$，而带权输出指数$D^G_I$应大于$D_I$
+
+          我们估计，枪手每局\textbf{正常}倒地次数为2次($d^0$)，每局所有人总计倒地次数为6次($d^1$)，则由$A_2$：
+
+          $\frac{D^0}{d^0} \cdot D_G> \frac{1}{d^1} \cdot d_G$
+          解得$D_G > \frac{d^0 \cdot d_G}{d^1 \cdot D^0} = \frac{7}{6} \cdot d_G$
+    \item[$A_3$] 我们估计，枪手的补给指数约为$\frac{1}{4}$($s^0$)（钻机$\frac{1}{4}$，枪手$\frac{1}{4}$，工程$\frac{3}{8}$，侦察$\frac{1}{8}$）
+
+          我们估计，8K伤害对应一份补给，即一份补给对应约$\frac{2D^0}{5} = \frac{4}{35}$
+
+          则由$A_3$：$\frac{2D^0}{5} \cdot D_G > s^0 \cdot s_G$
+
+          解得$s_G < \frac{2D^0 \cdot D_G}{5 s^0} = \frac{16}{35} D_G$
+
+    \item[$A_4$] $d_G \ge r_G$.
+\end{description}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{8em}|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    项目             & 权重标识  & 参考值     \endhead
+
+    \hline
+
+    击杀数指数($k_I^G$) & $k_G$ & $0.050$          \\
+
+    \hline
+
+    输出指数($D_I^G$)  & $D_G$ & $0.410$          \\
+
+    \hline
+
+    高威胁目标($P_I$)   & $P_G$ & $0.300$          \\
+
+    \hline
+
+    救人指数($r_I$)    & $r_G$ & $0.050$          \\
+
+    \hline
+
+    倒地指数($d_I$)    & $d_G$ & $0.050$          \\
+
+    \hline
+
+    友伤指数($f_I$)    & $f_G$ & $0.100$          \\
+
+    \hline
+
+    硝石指数($n_I$)    & $n_G$ & $0.010$          \\
+
+    \hline
+
+    补给指数($s_I$)    & $s_G$ & $0.025$          \\
+
+    \hline
+
+    采集指数($m_I$)    & $m_G$ & $0.005$          \\
+
+    \hline
+\end{longtable}
+
+
+\subsection{工程}
+
+\begin{description}
+    \item[$E_1$] 输出\cite{tieba-all}\cite{xiaoheihe-all}.
+\end{description}
+
+约束条件：
+
+\begin{description}
+    \item[$E_1$] $k_E + D_E + P_E \ge 0.65, D_E > P_E > k_E$.
+    \item[$A_1$] $f_E \ge 0.1$.
+    \item[$A_2$]  我们估计，平均每局总计输出大约为70K，工程平均输出应大于30K，则不带权输出指数$D_I$应大约为$D^0 = \frac{3}{7}$，而带权输出指数$D^E_I$应大于$D_I$
+
+          我们估计，工程每局\textbf{正常}倒地次数为2次($d^0$)，每局所有人总计倒地次数为6次($d^1$)，则由$A_2$：
+
+          $\frac{D^0}{d^0} \cdot D_E> \frac{1}{d^1} \cdot d_E$
+          解得$D_E > \frac{d^0 \cdot d_E}{d^1 \cdot D^0} = \frac{7}{9} \cdot d_E$
+    \item[$A_3$] 我们估计，工程的补给指数约为$\frac{3}{8}$($s^0$)（钻机$\frac{1}{4}$，枪手$\frac{1}{4}$，工程$\frac{3}{8}$，侦察$\frac{1}{8}$）
+
+          我们估计，10K伤害对应一份补给，即一份补给对应约$\frac{D^0}{3} = \frac{1}{7}$
+
+          则由$A_3$：$\frac{D^0}{3} \cdot D_E > s^0 \cdot s_E$
+
+          解得$s_E < \frac{D^0 \cdot D_E}{3 s^0} = \frac{8}{21} D_E$
+
+    \item[$A_4$] $d_E \ge r_E$.
+\end{description}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{8em}|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    项目             & 权重标识  & 参考值     \endhead
+
+    \hline
+
+    击杀数指数($k_I^E$) & $k_E$ & $0.050$          \\
+
+    \hline
+
+    输出指数($D_I^E$)  & $D_E$ & $0.500$          \\
+
+    \hline
+
+    高威胁目标($P_I$)   & $P_E$ & $0.125$          \\
+
+    \hline
+
+    救人指数($r_I$)    & $r_E$ & $0.050$          \\
+
+    \hline
+
+    倒地指数($d_I$)    & $d_E$ & $0.050$          \\
+
+    \hline
+
+    友伤指数($f_I$)    & $f_E$ & $0.100$          \\
+
+    \hline
+
+    硝石指数($n_I$)    & $n_E$ & $0.025$          \\
+
+    \hline
+
+    补给指数($s_I$)    & $s_E$ & $0.080$          \\
+
+    \hline
+
+    采集指数($m_I$)    & $m_E$ & $0.020$          \\
+
+    \hline
+\end{longtable}
+
+
+\subsection{（辅助型）侦察}
+
+\begin{description}
+    \item[$S_1$] 保证硝石供应.\cite{bilibili-scout}\cite{tieba-scout}\cite{tieba-all}\cite{xiaoheihe-all}
+    \item[$S_2$] 处理高威胁单位.\cite{bilibili-scout}\cite{tieba-scout}\cite{tieba-all}
+    \item[$S_3$] 杀敌不是主要工作.\cite{tieba-scout}\cite{tieba-all}\cite{xiaoheihe-all}
+    \item[$S_4$] 采矿.\cite{tieba-all}\cite{xiaoheihe-all}
+\end{description}
+
+约束条件：
+
+\begin{description}
+    \item[$S_1$] $n_S \ge 0.3$.
+    \item[$S_2$] $P_S > D_S, P_S > k_S, P_S \ge 0.1$.
+    \item[$S_3$] $k_S + D_S + P_S \le 0.2$.
+    \item[$S_4$] $n_S + p_S \ge 0.5$.
+    \item[$A_1$] $f_E \ge 0.1$.
+    \item[$A_2$] 不适用.\cite{tieba-scout}\cite{tieba-all}\cite{xiaoheihe-all}
+    \item[$A_3$] 我们估计，侦察的补给指数约为$\frac{1}{8}$($s^0$)（钻机$\frac{1}{4}$，枪手$\frac{1}{4}$，工程$\frac{3}{8}$，侦察$\frac{1}{8}$），$D^0 = \frac{4}{35}$
+
+          我们估计，4K伤害对应一份补给（不然灯真的不够用啊\verb|QAQ|），即一份补给对应约$\frac{D^0}{2} = \frac{2}{35}$
+
+          则由$A_3$：$\frac{D^0}{2} \cdot D_S > s^0 \cdot s_S$
+
+          解得$s_S < \frac{D^0 \cdot D_S}{2 s^0} = \frac{16}{35} D_S$.
+
+    \item[$A_4$] $d_S \ge r_S$.
+\end{description}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{8em}|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    项目             & 权重标识  & 参考值     \endhead
+
+    \hline
+
+    击杀数指数($k_I^S$) & $k_S$ & $0.010$          \\
+
+    \hline
+
+    输出指数($D_I^S$)  & $D_S$ & $0.040$          \\
+
+    \hline
+
+    高威胁目标($P_I$)   & $P_S$ & $0.150$          \\
+
+    \hline
+
+    救人指数($r_I$)    & $r_S$ & $0.087$          \\
+
+    \hline
+
+    倒地指数($d_I$)    & $d_S$ & $0.1$          \\
+
+    \hline
+
+    友伤指数($f_I$)    & $f_S$ & $0.100$          \\
+
+    \hline
+
+    硝石指数($n_I$)    & $n_S$ & $0.300$          \\
+
+    \hline
+
+    补给指数($s_I$)    & $s_S$ & $0.013$          \\
+
+    \hline
+
+    采集指数($m_I$)    & $m_S$ & $0.200$          \\
+
+    \hline
+\end{longtable}
+
+
+\subsection{（输出型）侦察}
+
+\begin{description}
+    \item[$S'_1$] 对单输出.
+    \item[$S'_2$] 处理高威胁单位.
+    \item[$S'_3$] 保证硝石供应.
+    \item[$S'_4$] 采矿.
+\end{description}
+
+约束条件：
+
+\begin{description}
+    \item[$S'_1$] $k_{S'} + D_{S'} + P_{S'} \ge 0.6, P_{S'} > D_{S'} > k_{S'}, k_{S'}=0$.
+    \item[$S'_2$] $P_{S'} \ge 0.3$.
+    \item[$S'_3$] $n_{S'} \ge 0.1$.
+    \item[$S'_4$] $n_{S'} + p_{S'} \ge 0.15$.
+    \item[$A_1$] $f_{S'} \ge 0.1$.
+    \item[$A_2$] 我们估计，平均每局总计输出大约为70K，输出型侦察平均输出应大于15K，则不带权输出指数$D_I$应大约为$D^0 = \frac{3}{14}$，而带权输出指数$D^{S'}_I$应大于$D_I$
+
+          我们估计，输出型侦察每局\textbf{正常}倒地次数为1.5次($d^0$)，每局所有人总计倒地次数为6次($d^1$)，则由$A_2$：
+
+          $\frac{D^0}{d^0} \cdot D_{S'}> \frac{1}{d^1} \cdot d_{S'}$
+          解得$D_{S'} > \frac{d^0 \cdot d_{S'}}{d^1 \cdot D^0} = \frac{7}{6} \cdot d_{S'}$
+    \item[$A_3$]我们估计，输出型侦察的补给指数约为$\frac{1}{4}$($s^0$)（钻机$\frac{1}{4}$，枪手$\frac{1}{4}$，工程$\frac{3}{8}$，(辅助型)侦察$\frac{1}{8}$）
+
+          我们估计，8K伤害对应一份补给，即一份补给对应约$\frac{8D^0}{15} = \frac{4}{35}$
+
+          则由$A_3$：$\frac{8D^0}{15} \cdot D_{S'} > s^0 \cdot s_{S'}$
+
+          解得$s_{S'} < \frac{8D^0 \cdot D_{S'}}{15 s^0} = \frac{16}{35} D_{S'}$.
+
+    \item[$A_4$] $d_{S'} \ge r_{S'}$.
+\end{description}
+
+
+\begin{longtable}{|>{\centering\arraybackslash}p{8em}|>{\centering\arraybackslash}p{4em}|>{\centering\arraybackslash}p{6em}|}
+    \hline
+
+    项目                & 权重标识     & 参考值     \endhead
+
+    \hline
+
+    击杀数指数($k_I^{S'}$) & $k_{S'}$ & $0.000$          \\
+
+    \hline
+
+    输出指数($D_I^{S'}$)  & $D_{S'}$ & $0.250$          \\
+
+    \hline
+
+    高威胁目标($P_I$)      & $P_{S'}$ & $0.350$          \\
+
+    \hline
+
+    救人指数($r_I$)       & $r_{S'}$ & $0.055$          \\
+
+    \hline
+
+    倒地指数($d_I$)       & $d_{S'}$ & $0.065$          \\
+
+    \hline
+
+    友伤指数($f_I$)       & $f_{S'}$ & $0.100$          \\
+
+    \hline
+
+    硝石指数($n_I$)       & $n_{S'}$ & $0.100$          \\
+
+    \hline
+
+    补给指数($s_I$)       & $s_{S'}$ & $0.030$          \\
+
+    \hline
+
+    采集指数($m_I$)       & $m_{S'}$ & $0.050$          \\
+
+    \hline
+\end{longtable}
+
+\section{玩家KPI}
+
+设玩家在任务$i$中所选的角色为$c_i$，在该任务中的玩家指数为$p_i$，其$mKPI$为$a$.
+
+则玩家总体KPI为：
+
+\begin{equation}
+    KPI = \frac{\sum_{i = 1}^{n} p_i \cdot a}{\sum_{i = 1}^{n} p_i}
+\end{equation}
+
+\appendix
+
+\section{统计数据}
+\label{sec:statistic}
+
+以下数据仅供参考，在实际计算KPI时，将根据所有任务的信息计算下列数据及$\Gamma$.
+
+有效局数：53，独立玩家数：66.
+
+以下“有效数据量”为在所有有效任务中，该角色的玩家指数之和.
+
+\begin{longtable}{|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{5em}|>{\centering\arraybackslash}p{5em}|}
+    \hline
+
+    角色 & 有效数据数量 & 平均击杀数 & 修正指标$\gamma^k$ \\
+
+    \hline
+
+    工程 & 55.95  & 188   & 2.848          \\
+
+    \hline
+
+    枪手 & 34.71  & 111   & 1.682          \\
+
+    \hline
+
+    钻机 & 35.75  & 111   & 1.682          \\
+
+    \hline
+
+    侦察 & 63.87  & 66    & 1.000          \\
+
+    \hline
+
+    \caption{角色击杀数与修正指标}
+
+    \label{tab:kill_by_character}
+\end{longtable}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{5em}|>{\centering\arraybackslash}p{5em}|}
+    \hline
+
+    角色 & 有效数据数量 & 平均伤害   & 修正指标$\gamma^D$ \\
+
+    \hline
+
+    工程 & 55.95  & 22.50K & 2.204          \\
+
+    \hline
+
+    枪手 & 34.71  & 13.86K & 1.357          \\
+
+    \hline
+
+    钻机 & 35.75  & 11.99K & 1.174          \\
+
+    \hline
+
+    侦察 & 63.87  & 10.21K & 1.000          \\
+
+    \hline
+
+    \caption{角色输出与修正指标}
+
+    \label{tab:damage_by_character}
+\end{longtable}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{5em}|>{\centering\arraybackslash}p{5em}|}
+    \hline
+
+    角色 & 有效数据数量 & 平均硝石采集量 & 修正指标$\gamma^n$ \\
+
+    \hline
+
+    侦察 & 63.87  & 138     & 3.000          \\
+
+    \hline
+
+    工程 & 55.95  & 78      & 1.696          \\
+
+    \hline
+
+    枪手 & 34.71  & 55      & 1.196          \\
+
+    \hline
+
+    钻机 & 35.75  & 46      & 1.000          \\
+
+    \hline
+    \caption{角色硝石采集量与修正指标}
+
+    \label{tab:nitra_by_character}
+\end{longtable}
+
+\begin{longtable}{|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{3em}|>{\centering\arraybackslash}p{5em}|>{\centering\arraybackslash}p{5em}|}
+    \hline
+
+    角色 & 有效数据数量 & 平均矿石采集量 & 修正指标$\gamma^m$ \\
+
+    \hline
+
+    侦察 & 63.87  & 256     & 2.612          \\
+
+    \hline
+
+    工程 & 55.95  & 135     & 1.378          \\
+
+    \hline
+
+    枪手 & 34.71  & 107     & 1.092          \\
+
+    \hline
+
+    钻机 & 35.75  & 98      & 1.000          \\
+
+    \hline
+
+    \caption{角色矿石采集量与修正指标}
+
+    \label{tab:minerals_by_character}
+\end{longtable}
+
+\section{权值表}
+
+对于权值表中未出现的敌人，在计算加权值时，按默认值计算.
+
+高威胁目标权值表的默认值为0，角色权值表为1.
+
+\input{weight_table.tex}
+\input{resource_weight_table.tex}
+
+\begin{thebibliography}{99}
+    \bibitem{bilibili-scout} 猫猫爱吃875小饼干.【深岩银河】从零开始的顶侦培养计划---第一章基础介绍(入门篇). https://www.bilibili.com/video/BV1ig4y197GB.
+    \bibitem{tieba-scout} 苏特施季里茨. 深岩银河侦察职业定位和武器选择. https://tieba.baidu.com/p/7819452549.
+    \bibitem{tieba-all} 红莲paduma. 给萌新的一些话. https://tieba.baidu.com/p/7253319800.
+    \bibitem{xiaoheihe-all} 寻妳足迹. 深岩银河从入门到入坑的一条龙指南. https://api.xiaoheihe.cn/v3/bbs/app/api/web/share?link\_id=119582418.
+\end{thebibliography}
+
+\end{document}
