@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, h, watch } from "vue";
-import {nFormatter, generateKPICharacterClass, getKPICharacterName } from "@/formatter";
+import { nFormatter, generateKPICharacterClass, getKPICharacterName } from "@/formatter";
 import { NAlert, NTag, useMessage, NDataTable, type DataTableColumns } from "naive-ui";
 
 import type { Response } from "@/type";
@@ -300,7 +300,7 @@ watch(
         message.error(`HTTP Error while loading KPI Info: ${e}`);
       });
 
-    fetch(`./api/mission/${props.missionId === undefined ? 1 : props.missionId}/kpi`)
+    fetch(`./api/mission/${props.missionId === undefined ? 1 : props.missionId}/kpi_full`)
       .then((response) => response.json())
       .then((data: Response<MissionKPIInfo[]>) => {
         if (data.code !== 200) {

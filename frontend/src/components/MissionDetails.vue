@@ -21,9 +21,12 @@ import MissionDamage from "./MissionDamage.vue";
 import MissionPick from "./MissionPick.vue";
 import MissionKPI from "./MissionKPI.vue";
 
+import { useLoginStore } from "@/store/login";
+
 const route = useRoute();
 const router = useRouter();
 const message = useMessage();
+const loginStore = useLoginStore();
 
 const props = defineProps<{
   missionId?: number;
@@ -113,7 +116,7 @@ watch(
           <MissionPick :mission-id="missionGeneralData.missionId" />
         </n-message-provider>
       </n-tab-pane>
-      <n-tab-pane name="kpi" tab="KPI" display-directive="show:lazy">
+      <n-tab-pane name="kpi" tab="KPI" display-directive="show:lazy" v-if="loginStore.login">
         <n-message-provider>
           <MissionKPI :mission-id="missionGeneralData.missionId" />
         </n-message-provider>

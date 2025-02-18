@@ -2,6 +2,9 @@
 import { NMessageProvider, NTabs, NTabPane, NCard } from "naive-ui";
 import KPIFactor from "./KPIFactor.vue";
 import KPIPlayer from "./KPIPlayer.vue";
+import { useLoginStore } from "@/store/login";
+
+const loginStore = useLoginStore();
 </script>
 <template>
   <NMessageProvider>
@@ -10,7 +13,12 @@ import KPIPlayer from "./KPIPlayer.vue";
         <n-tab-pane name="info" tab="信息" display-directive="show:lazy">
           <KPIFactor></KPIFactor>
         </n-tab-pane>
-        <n-tab-pane name="player" tab="玩家KPI" display-directive="show:lazy">
+        <n-tab-pane
+          name="player"
+          tab="玩家KPI"
+          display-directive="show:lazy"
+          v-if="loginStore.login"
+        >
           <KPIPlayer></KPIPlayer>
         </n-tab-pane>
       </n-tabs>

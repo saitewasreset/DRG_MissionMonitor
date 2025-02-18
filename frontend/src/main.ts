@@ -1,5 +1,6 @@
 import "./assets/base.css";
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 import "vfonts/Roboto.css";
 import "vfonts/FiraCode.css";
@@ -43,4 +44,6 @@ const router = createRouter({
   routes,
 });
 
-createApp(App).use(router).mount("#app");
+const pinia = createPinia();
+
+createApp(App).use(pinia).use(router).mount("#app");
