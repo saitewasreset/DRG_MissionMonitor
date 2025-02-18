@@ -1,102 +1,92 @@
-# Mission Monitor
+# Mission Monitor Web UI
 
 Mission Monitor，《深岩银河》游戏数据分析一站式解决方案。
 
-## 子项目
+[主项目地址](https://github.com/saitewasreset/DRG_MissionMonitor)
 
-- [Mission Monitor Mod](https://github.com/saitewasreset/DRG_MissionMonitor-mod)
-- [Mission Monitor Web UI](https://github.com/saitewasreset/DRG_MissionMonitor-webui)
-- [Mission Monitor 后端](https://github.com/saitewasreset/mission-backend-rs)
+## 功能简介
+
+### 概览
+
+- 游戏总体情况：游戏局数、平均每局游戏时长、任务通过率、任务平均难度、平均击杀数、平均伤害、平均采集量等；
+- 任务概览：每种任务类型的通过率、平均难度、平均任务时长、代币效率（平均每分钟代币数量）；
+- 角色信息：每个角色平均救人数、倒地数、采集量、补给信息；
+- 玩家信息：重点玩家的救人数、倒地数、采集量、补给信息。
+
+### 伤害/输出统计
+
+#### 输出统计
+
+- 按玩家：重点玩家平均击杀数、平均伤害、补给数量、平均每补给伤害；
+- 按武器：武器平均伤害、平均友伤、友伤比例；
+- 按角色：每个角色平均伤害、平均造成友伤/受到友伤，友伤比例，心碎值（受到友伤 / 造成友伤）；
+- 按敌人：总计击杀数，总计受到伤害。
+
+#### 友伤统计
+
+- 总体：重点玩家平均伤害（输出）、平均造成友伤、平均受到友伤，友伤比例（造成友伤 / （平均伤害 + 造成友伤）），心碎值；
+- 按玩家：每个玩家对其它玩家造成友伤与受到其它玩家友伤的详细数据。
+
+### 任务详情
+
+对于每个任务：
+
+- 概览：任务时长、难度、类型、状态、击杀数、总伤害、矿石采集、补给情况、玩家列表（蓝等，红等，头衔，玩家指数、救人/倒地次数）等；
+- 任务伤害统计：输出（击杀数、伤害，每补给伤害）、友伤（造成，受到，友伤比例）、武器（输出，友伤，友伤比例）、敌人（击杀数，受到伤害）；
+- 任务采集统计：硝石与其它资源采集量、玩家“净硝石量”；
+- 任务KPI：该任务中每个玩家的原始KPI及加权伤害、加权击杀数、高威胁目标加权伤害等。
+
+## KPI
+
+- KPI计算信息：实时计算并显示角色/高威胁目标权值表，数据修正指标，原始KPI修正因子；
+- 玩家KPI：总计加权值、玩家选择的每个角色的玩家指数及KPI，玩家在每个任务中的原始KPI信息及修正值。
+
+## 信息
+
+- 路人玩家信息：路人玩家数，再次相遇信息（相隔至少一小时后能否再次相遇），遇到过的所有路人玩家的相遇时间、上次相遇时间等。
 
 ## 部署
 
-### 服务器端
+### 一键部署
 
-#### 配置 Docker Secret
+建议使用[主项目](https://github.com/saitewasreset/DRG_MissionMonitor)，利用 Docker compose 进行一键部署。
 
-配置`docker-compose.yaml`中`secrets`部分的文件。
+## 截图
 
-| 名称           | 含义                                                            |
-| -------------- | --------------------------------------------------------------- |
-| db_user        | 数据库用户名                                                    |
-| db_passwd      | 数据库密码                                                      |
-| db_conn_url    | 连接数据库的 URL：`postgres://<db_user>:<db_passwd>@db/monitor` |
-| redis_conn_url | 连接 Redis 的 URL：`redis://redis/`                             |
-| access_token   | 访问后端管理功能 API 的认证 Token                               |
+![main](./screenshots/main.png)
 
-随后执行
+### 概览
 
-```shell
-sudo docker compose up
-```
+![1-1](./screenshots/1/1.png)
+![1-2](./screenshots/1/2.png)
+![1-3](./screenshots/1/3.png)
+![1-4](./screenshots/1/4.png)
 
-#### 前置 Web 服务器配置
+### 伤害
 
-由于`load_mission`上传任务时的请求 Body 较大，若在本项目提供的 Nginx 服务器前仍有前置 Web 服务器，需配置最大允许的请求体长度。
+![2-1](./screenshots/2/1.png)
+![2-2](./screenshots/2/2.png)
+![2-3](./screenshots/2/3.png)
+![2-4](./screenshots/2/4.png)
+![2-5](./screenshots/2/5.png)
+![2-6](./screenshots/2/6.png)
 
-例如，对于 Nginx：
+### 任务信息
 
-```config
-http {
-    ...
+![3-1](./screenshots/3/1.png)
+![3-2](./screenshots/3/2.png)
+![3-3](./screenshots/3/3.png)
+![3-4](./screenshots/3/4.png)
+![3-5](./screenshots/3/5.png)
+![3-6](./screenshots/3/6.png)
 
-    client_max_body_size 512M;
+### KPI
 
-    ...
-}
-```
+![4-1](./screenshots/4/1.png)
+![4-1](./screenshots/4/2.png)
+![4-1](./screenshots/4/3.png)
+![4-1](./screenshots/4/4.png)
 
-作为参考，一次性上传 180 次任务的日志，请求 Body 的大小约为 3.5M。
+### 信息
 
-### 客户端
-
-管理工具下载：见[Github Release](https://github.com/saitewasreset/mission-backend-rs/releases)。
-
-客户端需加载 Mod 以获得数据，并将数据初始化。该过程仅需操作一次。随后每次游戏结束后需使用管理工具`load_mission`上传日志文件。
-
-#### 加载 Mod
-
-需使用[mint](https://github.com/trumank/mint)加载子项目中的[Mission Monitor Mod](https://github.com/saitewasreset/DRG_MissionMonitor-mod)，将`.pak`文件拖拽至`mint`界面后，点击`Install mods`即可完成安装。
-
-#### 全局参数配置
-
-全局脚本参数配置选项在`./config.json`文件中。
-
-- access_token：需与服务器端配置的 access_token 一致
-- endpoint_url：后端 API 的“根”路径
-- mapping_path：存储 mapping 文件的目录（已附带提供）
-- watchlist_path：存储要重点分析玩家 ID 的文件
-- kpi_config_path：存储 KPI 配置文件的目录（已附带提供）
-
-#### 运行管理工具
-
-以下操作需要按顺序执行：
-
-##### `load_watchlist`
-
-加载要重点分析（在伤害统计、KPI 统计中进行展示）的玩家 ID。
-
-在`watchlist_path`对应的文本文件中写入要重点分析的玩家 ID（每行一个玩家 ID，UTF-8 编码）。
-
-##### `load_kpi`
-
-为了计算玩家 KPI，需要加载 KPI 数据。
-
-##### `load_mapping`
-
-为了将游戏内部的武器、敌人、任务 ID 等与中文名称相匹配，需要加载 mapping。
-
-##### `load_mission`
-
-用于将游戏信息加载到后端，游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）。
-
-将所有要加载的游戏日志放到`./raw_log`目录中，已经加载的日志不会被重复加载。
-
-## 更新
-
-每次更新服务器端的容器时，仅需执行下列命令：
-
-```shell
-sudo docker compose pull
-sudo docker compose up --force-recreate
-```
+![5](./screenshots/5.png)
