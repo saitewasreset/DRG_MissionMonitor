@@ -32,7 +32,7 @@ sudo docker compose up
 
 #### 前置 Web 服务器配置
 
-由于`load_mission`上传任务时的请求 Body 较大，若在本项目提供的 Nginx 服务器前仍有前置 Web 服务器，需配置最大允许的请求体长度。
+由于上传任务时的请求 Body 较大，若在本项目提供的后端前仍有前置 Web 服务器，需配置最大允许的请求体长度。
 
 例如，对于 Nginx：
 
@@ -52,7 +52,7 @@ http {
 
 管理工具下载：见[Github Release](https://github.com/saitewasreset/mission-backend-rs/releases)。
 
-客户端需加载 Mod 以获得数据，并将数据初始化。该过程仅需操作一次。随后每次游戏结束后需使用管理工具`load_mission`上传日志文件。
+客户端需加载 Mod 以获得数据，并将数据初始化。该过程仅需操作一次。随后每次游戏结束后需使用管理工具`mission-monitor-tools load-mission`上传日志文件。
 
 #### 加载 Mod
 
@@ -60,37 +60,26 @@ http {
 
 #### 全局参数配置
 
-全局脚本参数配置选项在`./config.json`文件中。
+详见：
 
-- access_token：需与服务器端配置的 access_token 一致
-- endpoint_url：后端 API 的“根”路径
-- mapping_path：存储 mapping 文件的目录（已附带提供）
-- watchlist_path：存储要重点分析玩家 ID 的文件
-- kpi_config_path：存储 KPI 配置文件的目录（已附带提供）
+`mission-monitor-tools config --help`
 
 #### 运行管理工具
 
-以下操作需要按顺序执行：
+第一次运行时，需向服务端加载配置文件。
 
-##### `load_watchlist`
+首先，进行如下配置：
 
-加载要重点分析（在伤害统计、KPI 统计中进行展示）的玩家 ID。
+- 在`config/watchlist.txt`中写入要重点分析的玩家 ID（每行一个玩家 ID，UTF-8 编码）。
+- 将所有要加载的游戏日志放到`./raw_log`目录中，已经加载的日志不会被重复加载。游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）
 
-在`watchlist_path`对应的文本文件中写入要重点分析的玩家 ID（每行一个玩家 ID，UTF-8 编码）。
+之后，进行认证：
 
-##### `load_kpi`
+`mission-monitor-tools login`
 
-为了计算玩家 KPI，需要加载 KPI 数据。
+最后，初始化服务端：
 
-##### `load_mapping`
-
-为了将游戏内部的武器、敌人、任务 ID 等与中文名称相匹配，需要加载 mapping。
-
-##### `load_mission`
-
-用于将游戏信息加载到后端，游戏日志文件名应为`MissionMonitor_{timestamp}.txt`（由 Mod 自动生成）。
-
-将所有要加载的游戏日志放到`./raw_log`目录中，已经加载的日志不会被重复加载。
+`mission-monitor-tools server-init`
 
 ## 更新
 
