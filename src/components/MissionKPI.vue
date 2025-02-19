@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, h, watch } from "vue";
 import { nFormatter, generateKPICharacterClass, getKPICharacterName } from "@/formatter";
-import { NAlert, NTag, useMessage, NDataTable, type DataTableColumns } from "naive-ui";
+import { NCard, NAlert, NTag, useMessage, NDataTable, type DataTableColumns } from "naive-ui";
 
 import type { Response } from "@/type";
 
@@ -17,6 +17,7 @@ interface KPIComponent {
   rawIndex: number;
   correctedIndex: number;
   transformedIndex: number;
+  assignedIndex: number;
   weight: number;
 }
 
@@ -34,6 +35,7 @@ interface MissionKPIInfo {
   weightedResource: number;
   component: KPIComponent[];
   missionKPI: number;
+  note: string;
 }
 
 interface KPIDataTableRow {
@@ -50,6 +52,7 @@ interface KPIDataTableRow {
   weightedResource: number;
   component: KPIComponent[];
   missionKPI: number;
+  note: string;
 }
 
 interface KPIDataTableExpandRow {
@@ -60,6 +63,7 @@ interface KPIDataTableExpandRow {
   rawIndex: number;
   correctedIndex: number;
   transformedIndex: number;
+  assignedIndex: number;
   weight: number;
 }
 
@@ -119,6 +123,23 @@ function createKPITableExpandElement(row: KPIDataTableRow) {
       },
     },
     {
+      title: "指定指标",
+      key: "assignedIndex",
+      align: "center",
+      render(row) {
+        return h(
+          "span",
+          {
+            class: {
+              "text-ok": row.assignedIndex > row.transformedIndex,
+              "text-warning": row.assignedIndex < row.transformedIndex,
+            },
+          },
+          row.assignedIndex.toFixed(3),
+        );
+      },
+    },
+    {
       title: "权重",
       key: "weight",
       align: "center",
@@ -145,11 +166,18 @@ function createKPITableExpandElement(row: KPIDataTableRow) {
       rawIndex: component.rawIndex,
       correctedIndex: component.correctedIndex,
       transformedIndex: component.transformedIndex,
+      assignedIndex: component.assignedIndex,
       weight: component.weight,
     };
   });
 
-  return h(NDataTable, { columns, data, style: "width: fit-content" });
+  let child = [h(NDataTable, { columns, data, style: "width: 100%" })];
+
+  if (row.note !== "") {
+    child.push(h(NCard, row.note));
+  }
+
+  return h("div", child);
 }
 
 function createKPITableColumns(): DataTableColumns<KPIDataTableRow> {
@@ -264,6 +292,7 @@ function generateKPITableData(missionData: MissionKPIInfo[]): KPIDataTableRow[] 
       weightedResource: missionData.weightedResource,
       component: missionData.component,
       missionKPI: missionData.missionKPI,
+      note: missionData.note,
     };
   });
 
